@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h3>🪑 Vue Gemba - Chaise {{ objet.code_unique }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    {% if objet.photo %}
+                    <img src="{{ objet.photo.url }}" class="img-fluid rounded" alt="Photo chaise">
+                    {% else %}
+                    <div class="alert alert-warning">
+                        ⚠️ Pas de photo disponible. Aller sur le terrain pour prendre une photo!
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <h4>État actuel: 
+                        <span class="badge 
+                            {% if objet.etat == 'excellent' %}bg-success
+                            {% elif objet.etat == 'bon' %}bg-primary
+                            {% elif objet.etat == 'usage' %}bg-info
+                            {% elif objet.etat == 'bancal' %}bg-warning
+                            {% else %}bg-danger{% endif %}">
+                            {{ objet.get_etat_display }}
+                        </span>
+                    </h4>
+                    <h5 class="mt-4">Description:</h5>
+                    <p>{{ objet.description|default:"Aucune description renseignée" }}</p>
+                    
+                    <h5 class="mt-4">📝 Historique des problèmes:</h5>
+                    <ul>
+                        <li>Dernière inspection: {{ objet.date_derniere_modification|date:"d/m/Y" }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="javascript:history.back()" class="btn btn-secondary">Retour</a>
+            <button class="btn btn-primary" onclick="window.print()">📄 Imprimer rapport Gemba</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

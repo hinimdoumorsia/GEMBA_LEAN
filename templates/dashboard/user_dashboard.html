@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Tableau de bord - Utilisateur</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5>Signaler un problème</h5>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'signaler_probleme' %}" class="btn btn-info">⚠️ Signaler chaise/ordinateur cassé</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>Mes signalements</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for signalement in signalements %}
+                    <tr>
+                        <td>{{ signalement.get_type_probleme_display }}</td>
+                        <td>{{ signalement.description }}</td>
+                        <td>{{ signalement.date|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if signalement.resolu %}
+                            <span class="badge bg-success">Résolu</span>
+                            {% else %}
+                            <span class="badge bg-danger">En attente</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">Aucun signalement</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

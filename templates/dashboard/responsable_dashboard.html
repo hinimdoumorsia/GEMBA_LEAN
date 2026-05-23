@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Tableau de bord - Responsable de salle</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h5>Ajouter un rapport quotidien</h5>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'ajouter_rapport' %}" class="btn btn-success">📸 Publier rapport du jour</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>Historique des rapports</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for rapport in rapports %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        {% if rapport.photo %}
+                        <img src="{{ rapport.photo.url }}" class="card-img-top" alt="Photo salle">
+                        {% endif %}
+                        <div class="card-body">
+                            <h6>Salle: {{ rapport.salle.nom }}</h6>
+                            <p class="text-muted">Date: {{ rapport.date }}</p>
+                            <p>{{ rapport.commentaire|truncatewords:20 }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p>Aucun rapport pour le moment.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

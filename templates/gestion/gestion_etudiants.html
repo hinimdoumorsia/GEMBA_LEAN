@@ -1,0 +1,676 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-users me-2"></i>Gestion des Étudiants</h1>
+        <a href="{% url 'dashboard_admin_niveau' niveau_actuel semestre_actuel %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour au Dashboard
+        </a>
+    </div>
+
+    <p class="text-muted">
+        <i class="fas fa-info-circle me-1"></i> 
+        Total: {{ total_etudiants }} étudiants - Filière: <strong>IATD-SI</strong> - Niveau: <strong>{{ niveau_actuel_texte }}</strong>
+    </p>
+
+    <!-- Messages Django transformés en Toasts -->
+    {% if messages %}
+    <div id="django-messages-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        {% for message in messages %}
+        <div class="toast django-message-toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-delay="3000" style="margin-bottom: 10px; min-width: 300px;">
+            <div class="toast-header {% if message.tags == 'success' %}bg-success text-white{% elif message.tags == 'error' %}bg-danger text-white{% else %}bg-info text-white{% endif %}">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                <strong class="me-auto">{% if message.tags == 'success' %}Succès{% elif message.tags == 'error' %}Erreur{% else %}Information{% endif %}</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0"><i class="fas fa-chair me-1"></i>Chaises assignées</h6>
+                            <h2 class="mt-2 mb-0">{{ chaises_assignees_count|default:etudiants|length }}</h2>
+                            <small>sur {{ toutes_chaises|length }} total</small>
+                        </div>
+                        <i class="fas fa-chair fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0"><i class="fas fa-desktop me-1"></i>PC assignés</h6>
+                            <h2 class="mt-2 mb-0">{{ pc_assigne_count|default:etudiants|length }}</h2>
+                            <small>sur {{ tous_pc|length }} total</small>
+                        </div>
+                        <i class="fas fa-desktop fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0"><i class="fas fa-chair me-1"></i>Chaises disponibles</h6>
+                            <h2 class="mt-2 mb-0">{{ chaises_disponibles|length }}</h2>
+                        </div>
+                        <i class="fas fa-chair fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-secondary text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0"><i class="fas fa-desktop me-1"></i>PC disponibles</h6>
+                            <h2 class="mt-2 mb-0">{{ pc_disponibles|length }}</h2>
+                        </div>
+                        <i class="fas fa-desktop fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Formulaire d'ajout -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Ajouter un étudiant</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" id="ajoutEtudiantForm">
+                {% csrf_token %}
+                <input type="hidden" name="filiere" value="IATD-SI">
+                <input type="hidden" name="niveau" value="{{ niveau_actuel }}">
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-id-card me-1"></i>Matricule</label>
+                        <input type="text" name="matricule" class="form-control" placeholder="Ex: IATD001" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-user me-1"></i>Nom</label>
+                        <input type="text" name="nom" class="form-control" placeholder="Nom" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-user me-1"></i>Prénom</label>
+                        <input type="text" name="prenom" class="form-control" placeholder="Prénom" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-envelope me-1"></i>Email</label>
+                        <input type="email" name="email" class="form-control" placeholder="email@exemple.com">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-phone me-1"></i>Téléphone</label>
+                        <input type="text" name="telephone" class="form-control" placeholder="Téléphone">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold text-success"><i class="fas fa-link me-1"></i>Assignation automatique (Chaise + PC)</label>
+                        <select name="assignation_group" class="form-control" id="assignationGroupSelect">
+                            <option value="">-- Sélectionner un numéro --</option>
+                            {% for item in numeros_disponibles %}
+                            <option value="{{ item.numero }}" 
+                                    {% if item.chaise_occupee or item.pc_occupe %}disabled{% endif %}
+                                    style="background-color: {% if item.chaise_occupee or item.pc_occupe %}#f8d7da{% else %}#d1e7dd{% endif %};">
+                                <i class="fas fa-hashtag"></i> N°{{ item.numero }} — 
+                                <i class="fas fa-chair"></i> Chaise: {% if item.chaise_occupee %}<i class="fas fa-times-circle text-danger"></i> Déjà prise{% else %}<i class="fas fa-check-circle text-success"></i> Disponible{% endif %} | 
+                                <i class="fas fa-desktop"></i> PC: {% if item.pc_occupe %}<i class="fas fa-times-circle text-danger"></i> Déjà pris{% else %}<i class="fas fa-check-circle text-success"></i> Disponible{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-success"><i class="fas fa-info-circle me-1"></i>Choisis un numéro = Chaise N°X + PC N°X</small>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold text-warning"><i class="fas fa-chair me-1"></i>OU : Chaise (Assigner séparément)</label>
+                        <select name="chaise" class="form-control" id="chaiseSelect">
+                            <option value="">-- Sélectionner une chaise --</option>
+                            {% for chaise in chaises_disponibles_select %}
+                            <option value="chaise_{{ chaise.numero }}" data-numero="{{ chaise.numero }}">
+                                <i class="fas fa-chair me-1"></i> N°{{ chaise.numero }} - Chaise {{ chaise.numero }} ✓ Disponible
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label fw-bold text-warning"><i class="fas fa-desktop me-1"></i>PC (Assigner séparément)</label>
+                        <select name="pc" class="form-control" id="pcSelect">
+                            <option value="">-- Sélectionner un PC --</option>
+                            {% for pc in pc_disponibles_select %}
+                            <option value="pc_{{ pc.numero }}" data-numero="{{ pc.numero }}">
+                                <i class="fas fa-desktop me-1"></i> N°{{ pc.numero }} - PC {{ pc.numero }} ✓ Disponible
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit" name="action" value="ajouter" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Ajouter l'étudiant
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Liste des étudiants -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Liste des étudiants</h5>
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th><i class="fas fa-id-card"></i> Matricule</th>
+                        <th><i class="fas fa-user"></i> Nom complet</th>
+                        <th><i class="fas fa-graduation-cap"></i> Niveau</th>
+                        <th><i class="fas fa-chair"></i> Chaise</th>
+                        <th><i class="fas fa-desktop"></i> PC</th>
+                        <th><i class="fas fa-calendar"></i> Date</th>
+                        <th><i class="fas fa-cogs"></i> Actions</th>
+                    </td>
+                </thead>
+                <tbody>
+                    {% for etudiant in etudiants %}
+                    <tr class="{% if not etudiant.chaise_associee or not etudiant.pc_associe %}table-warning{% endif %}">
+                        <td><strong>{{ etudiant.matricule }}</strong></td>
+                        <td>{{ etudiant.nom }} {{ etudiant.prenom }}</td>
+                        <td><span class="badge bg-info">{{ etudiant.get_niveau_display }}</span></td>
+                        <td>
+                            {% if etudiant.chaise_associee %}
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-chair me-1"></i> N°{{ etudiant.chaise_associee.numero }}
+                                </span>
+                                <small class="text-muted d-block">{{ etudiant.chaise_associee.code_unique }}</small>
+                            {% else %}
+                                <span class="text-muted"><i class="fas fa-ban me-1"></i>Non assignée</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if etudiant.pc_associe %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-desktop me-1"></i> N°{{ etudiant.pc_associe.numero }}
+                                </span>
+                                <small class="text-muted d-block">{{ etudiant.pc_associe.code_unique }}</small>
+                            {% else %}
+                                <span class="text-muted"><i class="fas fa-ban me-1"></i>Non assigné</span>
+                            {% endif %}
+                        </td>
+                        <td><small>{{ etudiant.date_association|date:"d/m/Y" }}</small></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-info voir-equipements" 
+                                    data-chaise-code="{% if etudiant.chaise_associee %}{{ etudiant.chaise_associee.code_unique }}{% else %}Aucune{% endif %}"
+                                    data-chaise-numero="{% if etudiant.chaise_associee %}{{ etudiant.chaise_associee.numero }}{% else %}-{% endif %}"
+                                    data-chaise-etat="{% if etudiant.chaise_associee %}{{ etudiant.chaise_associee.get_etat_display }}{% else %}-{% endif %}"
+                                    data-chaise-description="{% if etudiant.chaise_associee %}{{ etudiant.chaise_associee.description|default:'Aucune description' }}{% else %}-{% endif %}"
+                                    data-chaise-photo="{% if etudiant.chaise_associee and etudiant.chaise_associee.photo %}{{ etudiant.chaise_associee.photo.url }}{% endif %}"
+                                    data-pc-code="{% if etudiant.pc_associe %}{{ etudiant.pc_associe.code_unique }}{% else %}Aucun{% endif %}"
+                                    data-pc-numero="{% if etudiant.pc_associe %}{{ etudiant.pc_associe.numero }}{% else %}-{% endif %}"
+                                    data-pc-etat="{% if etudiant.pc_associe %}{{ etudiant.pc_associe.get_etat_display }}{% else %}-{% endif %}"
+                                    data-pc-description="{% if etudiant.pc_associe %}{{ etudiant.pc_associe.description|default:'Aucune description' }}{% else %}-{% endif %}"
+                                    data-pc-photo="{% if etudiant.pc_associe and etudiant.pc_associe.photo %}{{ etudiant.pc_associe.photo.url }}{% endif %}"
+                                    data-etudiant="{{ etudiant.nom }} {{ etudiant.prenom }}">
+                                    <i class="fas fa-eye me-1"></i>Voir équipements
+                                </button>
+                                <button type="button" class="btn btn-sm btn-warning modifier-etudiant" 
+                                   data-id="{{ etudiant.id }}"
+                                   data-matricule="{{ etudiant.matricule }}"
+                                   data-nom="{{ etudiant.nom }}"
+                                   data-prenom="{{ etudiant.prenom }}"
+                                   data-email="{{ etudiant.email|default:'' }}"
+                                   data-telephone="{{ etudiant.telephone|default:'' }}"
+                                   data-chaise-id="{% if etudiant.chaise_associee %}{{ etudiant.chaise_associee.id }}{% endif %}"
+                                   data-chaise-numero-assignee="{% if etudiant.chaise_associee %}{{ etudiant.chaise_associee.numero }}{% endif %}"
+                                   data-pc-id="{% if etudiant.pc_associe %}{{ etudiant.pc_associe.id }}{% endif %}"
+                                   data-pc-numero-assigne="{% if etudiant.pc_associe %}{{ etudiant.pc_associe.numero }}{% endif %}">
+                                    <i class="fas fa-edit me-1"></i>Modifier
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger supprimer-etudiant" 
+                                    data-id="{{ etudiant.id }}"
+                                    data-nom="{{ etudiant.nom }} {{ etudiant.prenom }}">
+                                    <i class="fas fa-trash me-1"></i>Supprimer
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <i class="fas fa-user-graduate fa-3x text-muted mb-3 d-block"></i>
+                            <p class="text-muted mb-0">Aucun étudiant trouvé</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Voir Équipements - SOLUTION DÉFINITIVE SANS DOUBLE AFFICHAGE -->
+<div class="modal fade" id="voirEquipementsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-microchip me-2"></i>Équipements de l'étudiant</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center mb-4" id="equipementEtudiantNom"></p>
+                <div class="row">
+                    <!-- CHAISE -->
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0"><i class="fas fa-chair me-2"></i>Chaise</h6>
+                            </div>
+                            <div class="card-body text-center">
+                                <!-- UN SEUL CONTENEUR POUR LA PHOTO -->
+                                <div class="mb-3" id="chaisePhotoArea"></div>
+                                <p class="mb-1"><strong>Code:</strong> <span id="chaiseCode">-</span></p>
+                                <p class="mb-1"><strong>Numéro:</strong> <span id="chaiseNumero">-</span></p>
+                                <p class="mb-1"><strong>État:</strong> <span id="chaiseEtat"></span></p>
+                                <p class="mb-0"><strong>Description:</strong> <span id="chaiseDescription">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- PC -->
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0"><i class="fas fa-desktop me-2"></i>PC</h6>
+                            </div>
+                            <div class="card-body text-center">
+                                <!-- UN SEUL CONTENEUR POUR LA PHOTO -->
+                                <div class="mb-3" id="pcPhotoArea"></div>
+                                <p class="mb-1"><strong>Code:</strong> <span id="pcCode">-</span></p>
+                                <p class="mb-1"><strong>Numéro:</strong> <span id="pcNumero">-</span></p>
+                                <p class="mb-1"><strong>État:</strong> <span id="pcEtat"></span></p>
+                                <p class="mb-0"><strong>Description:</strong> <span id="pcDescription">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Modifier Étudiant -->
+<div class="modal fade" id="modifierEtudiantModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" id="modifierEtudiantForm">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="modifier">
+                <input type="hidden" name="etudiant_id" id="modifierEtudiantId">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Modifier l'étudiant</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label><i class="fas fa-id-card me-1"></i>Matricule</label>
+                            <input type="text" name="matricule" id="modifierMatricule" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label><i class="fas fa-user me-1"></i>Nom</label>
+                            <input type="text" name="nom" id="modifierNom" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label><i class="fas fa-user me-1"></i>Prénom</label>
+                            <input type="text" name="prenom" id="modifierPrenom" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label><i class="fas fa-envelope me-1"></i>Email</label>
+                            <input type="email" name="email" id="modifierEmail" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label><i class="fas fa-phone me-1"></i>Téléphone</label>
+                            <input type="text" name="telephone" id="modifierTelephone" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label><i class="fas fa-graduation-cap me-1"></i>Niveau</label>
+                            <input type="text" class="form-control" value="{{ niveau_actuel_texte }}" readonly disabled>
+                            <input type="hidden" name="niveau" value="{{ niveau_actuel }}">
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h6 class="mt-3 mb-3"><i class="fas fa-chair me-2"></i>Assignation des équipements</h6>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold"><i class="fas fa-chair me-1 text-primary"></i>Chaise</label>
+                            <select name="chaise" id="modifierChaise" class="form-control">
+                                <option value="">-- Aucune chaise --</option>
+                                {% for chaise in toutes_chaises_select %}
+                                <option value="chaise_{{ chaise.numero }}" data-numero="{{ chaise.numero }}" {% if chaise.est_assigne %}disabled{% endif %}>
+                                    <i class="fas fa-chair me-1"></i> N°{{ chaise.numero }} - Chaise {{ chaise.numero }}
+                                    {% if chaise.est_assigne %}<span class="text-danger">(Occupée)</span>{% else %}<span class="text-success">(Disponible)</span>{% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold"><i class="fas fa-desktop me-1 text-success"></i>PC</label>
+                            <select name="pc" id="modifierPc" class="form-control">
+                                <option value="">-- Aucun PC --</option>
+                                {% for pc in tous_pc_select %}
+                                <option value="pc_{{ pc.numero }}" data-numero="{{ pc.numero }}" {% if pc.est_assigne %}disabled{% endif %}>
+                                    <i class="fas fa-desktop me-1"></i> N°{{ pc.numero }} - PC {{ pc.numero }}
+                                    {% if pc.est_assigne %}<span class="text-danger">(Occupé)</span>{% else %}<span class="text-success">(Disponible)</span>{% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Suppression -->
+<div class="modal fade" id="supprimerEtudiantModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="supprimer">
+                <input type="hidden" name="etudiant_id" id="supprimerEtudiantId">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Confirmer la suppression</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Supprimer l'étudiant :</p>
+                    <p class="fw-bold text-center" id="supprimerEtudiantNom"></p>
+                    <p class="text-danger mt-3"><i class="fas fa-info-circle me-1"></i> Cette action est irréversible !</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toasts Django
+    const djangoToasts = document.querySelectorAll('.django-message-toast');
+    djangoToasts.forEach(function(toastElement) {
+        new bootstrap.Toast(toastElement, { autohide: true, delay: 3000 }).show();
+    });
+    setTimeout(function() {
+        const container = document.getElementById('django-messages-container');
+        if (container) container.remove();
+    }, 3500);
+    
+    // Assignation automatique / séparée
+    const assignationGroupSelect = document.getElementById('assignationGroupSelect');
+    const chaiseSelect = document.getElementById('chaiseSelect');
+    const pcSelect = document.getElementById('pcSelect');
+    
+    if (assignationGroupSelect) {
+        assignationGroupSelect.addEventListener('change', function() {
+            if (this.value) {
+                chaiseSelect.disabled = true;
+                pcSelect.disabled = true;
+                const numero = this.value;
+                for (let i = 0; i < chaiseSelect.options.length; i++) {
+                    const opt = chaiseSelect.options[i];
+                    if (opt.getAttribute('data-numero') === numero) {
+                        chaiseSelect.value = opt.value;
+                        break;
+                    }
+                }
+                for (let i = 0; i < pcSelect.options.length; i++) {
+                    const opt = pcSelect.options[i];
+                    if (opt.getAttribute('data-numero') === numero) {
+                        pcSelect.value = opt.value;
+                        break;
+                    }
+                }
+            } else {
+                chaiseSelect.disabled = false;
+                pcSelect.disabled = false;
+                chaiseSelect.value = '';
+                pcSelect.value = '';
+            }
+        });
+    }
+    
+    if (chaiseSelect) {
+        chaiseSelect.addEventListener('change', function() {
+            if (assignationGroupSelect && this.value) {
+                assignationGroupSelect.value = '';
+            }
+        });
+    }
+    
+    if (pcSelect) {
+        pcSelect.addEventListener('change', function() {
+            if (assignationGroupSelect && this.value) {
+                assignationGroupSelect.value = '';
+            }
+        });
+    }
+    
+    // Voir équipements - SOLUTION DÉFINITIVE
+    document.querySelectorAll('.voir-equipements').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('equipementEtudiantNom').innerHTML = `<strong>${this.dataset.etudiant}</strong>`;
+            
+            // ========== CHAISE ==========
+            document.getElementById('chaiseCode').textContent = this.dataset.chaiseCode;
+            document.getElementById('chaiseNumero').textContent = this.dataset.chaiseNumero;
+            document.getElementById('chaiseDescription').textContent = this.dataset.chaiseDescription;
+            
+            let chaiseEtatClass = 'badge bg-secondary';
+            const chaiseEtat = this.dataset.chaiseEtat;
+            if (chaiseEtat === 'Excellent' || chaiseEtat === 'Bon') chaiseEtatClass = 'badge bg-success';
+            else if (chaiseEtat === 'Usure normale') chaiseEtatClass = 'badge bg-warning';
+            else if (chaiseEtat === 'Bancal') chaiseEtatClass = 'badge bg-warning';
+            else if (chaiseEtat === 'Cassée' || chaiseEtat === 'Tag/graffiti') chaiseEtatClass = 'badge bg-danger';
+            document.getElementById('chaiseEtat').innerHTML = `<span class="${chaiseEtatClass}">${chaiseEtat}</span>`;
+            
+            // Gestion photo CHAISE - UN SEUL ÉLÉMENT
+            const chaisePhotoArea = document.getElementById('chaisePhotoArea');
+            const chaisePhotoUrl = this.dataset.chaisePhoto;
+            
+            if (chaisePhotoUrl && chaisePhotoUrl !== 'None' && chaisePhotoUrl !== '' && chaisePhotoUrl !== 'undefined') {
+                chaisePhotoArea.innerHTML = `<img src="${chaisePhotoUrl}" alt="Photo chaise" style="max-width: 100%; max-height: 150px; object-fit: cover; border-radius: 5px;">`;
+            } else {
+                chaisePhotoArea.innerHTML = `<div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 150px; border-radius: 5px;"><i class="fas fa-chair fa-3x me-2"></i>Aucune photo</div>`;
+            }
+            
+            // ========== PC ==========
+            document.getElementById('pcCode').textContent = this.dataset.pcCode;
+            document.getElementById('pcNumero').textContent = this.dataset.pcNumero;
+            document.getElementById('pcDescription').textContent = this.dataset.pcDescription;
+            
+            let pcEtatClass = 'badge bg-secondary';
+            const pcEtat = this.dataset.pcEtat;
+            if (pcEtat === 'Excellent' || pcEtat === 'Bon') pcEtatClass = 'badge bg-success';
+            else if (pcEtat === 'Lent') pcEtatClass = 'badge bg-warning';
+            else if (pcEtat !== '-' && pcEtat !== '') pcEtatClass = 'badge bg-danger';
+            document.getElementById('pcEtat').innerHTML = `<span class="${pcEtatClass}">${pcEtat}</span>`;
+            
+            // Gestion photo PC - UN SEUL ÉLÉMENT
+            const pcPhotoArea = document.getElementById('pcPhotoArea');
+            const pcPhotoUrl = this.dataset.pcPhoto;
+            
+            if (pcPhotoUrl && pcPhotoUrl !== 'None' && pcPhotoUrl !== '' && pcPhotoUrl !== 'undefined') {
+                pcPhotoArea.innerHTML = `<img src="${pcPhotoUrl}" alt="Photo PC" style="max-width: 100%; max-height: 150px; object-fit: cover; border-radius: 5px;">`;
+            } else {
+                pcPhotoArea.innerHTML = `<div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 150px; border-radius: 5px;"><i class="fas fa-desktop fa-3x me-2"></i>Aucune photo</div>`;
+            }
+            
+            new bootstrap.Modal(document.getElementById('voirEquipementsModal')).show();
+        });
+    });
+    
+    // Modifier étudiant
+    document.querySelectorAll('.modifier-etudiant').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('modifierEtudiantId').value = this.dataset.id;
+            document.getElementById('modifierMatricule').value = this.dataset.matricule;
+            document.getElementById('modifierNom').value = this.dataset.nom;
+            document.getElementById('modifierPrenom').value = this.dataset.prenom;
+            document.getElementById('modifierEmail').value = this.dataset.email;
+            document.getElementById('modifierTelephone').value = this.dataset.telephone;
+            
+            const chaiseNumero = this.dataset.chaiseNumeroAssignee;
+            const modifierChaise = document.getElementById('modifierChaise');
+            if (modifierChaise && chaiseNumero && chaiseNumero !== '-') {
+                for (let i = 0; i < modifierChaise.options.length; i++) {
+                    const opt = modifierChaise.options[i];
+                    if (opt.getAttribute('data-numero') === chaiseNumero) {
+                        modifierChaise.value = opt.value;
+                        break;
+                    }
+                }
+            } else if (modifierChaise) {
+                modifierChaise.value = '';
+            }
+            
+            const pcNumero = this.dataset.pcNumeroAssigne;
+            const modifierPc = document.getElementById('modifierPc');
+            if (modifierPc && pcNumero && pcNumero !== '-') {
+                for (let i = 0; i < modifierPc.options.length; i++) {
+                    const opt = modifierPc.options[i];
+                    if (opt.getAttribute('data-numero') === pcNumero) {
+                        modifierPc.value = opt.value;
+                        break;
+                    }
+                }
+            } else if (modifierPc) {
+                modifierPc.value = '';
+            }
+            
+            new bootstrap.Modal(document.getElementById('modifierEtudiantModal')).show();
+        });
+    });
+    
+    // Supprimer étudiant
+    document.querySelectorAll('.supprimer-etudiant').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('supprimerEtudiantId').value = this.dataset.id;
+            document.getElementById('supprimerEtudiantNom').innerHTML = this.dataset.nom;
+            new bootstrap.Modal(document.getElementById('supprimerEtudiantModal')).show();
+        });
+    });
+});
+</script>
+
+<style>
+    .btn-sm { 
+        margin: 2px; 
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+    .gap-2 { gap: 5px; }
+    .d-flex { display: flex; }
+    .opacity-50 { opacity: 0.5; }
+    .badge { 
+        font-size: 0.85em; 
+        padding: 0.35em 0.65em;
+        font-weight: 600;
+    }
+    select option:disabled { 
+        background-color: #f0f0f0;
+        color: #999;
+        cursor: not-allowed;
+    }
+    .table-warning {
+        background-color: #fff3cd;
+    }
+    .table-responsive {
+        overflow-x: auto;
+    }
+    .btn-group {
+        display: inline-flex;
+        gap: 5px;
+    }
+    .btn-outline-info {
+        color: #0dcaf0;
+        border-color: #0dcaf0;
+    }
+    .btn-outline-info:hover {
+        background-color: #0dcaf0;
+        color: white;
+    }
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #000;
+    }
+    .btn-warning:hover {
+        background-color: #ffca2c;
+        border-color: #ffca2c;
+    }
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+    .btn-danger:hover {
+        background-color: #bb2d3b;
+        border-color: #b02a37;
+    }
+    .shadow-sm {
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    }
+    .card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+    }
+</style>
+{% endblock %}

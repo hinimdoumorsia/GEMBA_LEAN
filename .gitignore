@@ -1,0 +1,32 @@
+# Ignorer les fichiers et dossiers spécifiques à Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environnement virtuel
+venv/
+env/
+
+# Base de données SQLite (par défaut pour le développement)
+db.sqlite3
+
+# Fichiers médias uploadés par l'application
+media/
+
+# Fichiers de logs
+logs/
+
+# Fichiers de configuration sensibles (si utilisés)
+# .env
+# *.ini
+# *.json (si contient des secrets)
+
+# Fichiers spécifiques aux IDE (ex: PyCharm, VS Code)
+.idea/
+.vscode/
+
+# Fichiers de test ou de données temporaires
+*.log
+*.tmp
+*.bak

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm" style="border: 2px solid #2196F3;">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h4><i class="fas fa-envelope me-2"></i>Renvoyer le lien de vérification</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Vous n'avez pas reçu l'email de vérification ? 
+                        Entrez votre adresse email ci-dessous pour recevoir un nouveau lien.
+                    </p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-envelope me-1"></i>Adresse email</label>
+                            <input type="email" name="email" class="form-control" required 
+                                   placeholder="exemple@email.com">
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-paper-plane me-2"></i>Renvoyer le lien
+                        </button>
+                    </form>
+                    
+                    <hr>
+                    <div class="text-center">
+                        <a href="{% url 'login' %}" class="text-decoration-none">
+                            <i class="fas fa-arrow-left me-1"></i>Retour à la connexion
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

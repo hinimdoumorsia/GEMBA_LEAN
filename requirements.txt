@@ -1,0 +1,14 @@
+# Framework Django
+Django==4.2.7
+
+# Gestion d'images
+Pillow==10.1.0
+
+# Base de données (SQLite est inclus avec Django, mais pour PostgreSQL en production)
+# psycopg2-binary==2.9.9  # Pour PostgreSQL (optionnel)
+
+# Pour les variables d'environnement (optionnel)
+# python-dotenv==1.0.0
+
+# Pour le debug (optionnel)
+# django-debug-toolbar==4.2.0

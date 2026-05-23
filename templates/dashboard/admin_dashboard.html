@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Bienvenue sur votre tableau de bord, cher {{ user.username }}</h1>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Chaises</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ chaises.count }} Chaises</h5>
+                    <a href="{% url 'gestion_chaises' %}" class="btn btn-light">Gérer</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Ordinateurs</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ ordinateurs.count }} Ordinateurs</h5>
+                    <a href="{% url 'gestion_ordinateurs' %}" class="btn btn-light">Gérer</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">Signalements</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ signalements.count }} Non résolus</h5>
+                    <a href="#" class="btn btn-light">Voir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mt-3">
+        <div class="card-header">
+            <h5>Actions rapides</h5>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'gestion_chaises' %}" class="btn btn-secondary">Gérer chaises</a>
+            <a href="{% url 'gestion_ordinateurs' %}" class="btn btn-secondary">Gérer ordinateurs</a>
+            <a href="{% url 'gestion_etudiants' %}" class="btn btn-secondary">Gérer étudiants</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

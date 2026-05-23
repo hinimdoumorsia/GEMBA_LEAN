@@ -1,0 +1,365 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-desktop me-2"></i>Gestion des ordinateurs</h1>
+        <a href="{% url 'dashboard_admin_niveau' niveau_actuel semestre_actuel %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour au Dashboard
+        </a>
+    </div>
+
+    <!-- Messages Django transformés en Toasts -->
+    {% if messages %}
+    <div id="django-messages-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        {% for message in messages %}
+        <div class="toast django-message-toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-delay="3000" style="margin-bottom: 10px; min-width: 300px;">
+            <div class="toast-header {% if message.tags == 'success' %}bg-success text-white{% elif message.tags == 'error' %}bg-danger text-white{% else %}bg-info text-white{% endif %}">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                <strong class="me-auto">{% if message.tags == 'success' %}Succès{% elif message.tags == 'error' %}Erreur{% else %}Information{% endif %}</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Formulaire d'ajout d'ordinateur -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Ajouter un nouvel ordinateur</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" id="ajoutOrdinateurForm">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">Numéro (1 à 50)</label>
+                        <select name="numero" class="form-control" required>
+                            <option value="">-- Sélectionner un numéro --</option>
+                            {% for i in "1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950"|slice:":50" %}
+                            {% with num=forloop.counter %}
+                            <option value="{{ num }}" {% if num in numeros_existants %}disabled class="text-danger"{% endif %}>
+                                N°{{ num }} — Code auto: PC_{{ num|stringformat:"03d" }}
+                                {% if num in numeros_existants %} (Déjà pris){% else %} (Disponible){% endif %}
+                            </option>
+                            {% endwith %}
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Le code unique "PC_XXX" sera généré automatiquement</small>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">Salle</label>
+                        <select name="salle" class="form-control" required>
+                            <option value="">-- Sélectionner une salle --</option>
+                            {% for salle in salles %}
+                            <option value="{{ salle.id }}">{{ salle.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">État</label>
+                        <select name="etat" class="form-control" required>
+                            <option value="excellent">Excellent</option>
+                            <option value="bon">Bon</option>
+                            <option value="lent">Lent</option>
+                            <option value="ecran_casse">Écran cassé</option>
+                            <option value="clavier_hs">Clavier HS</option>
+                            <option value="souris_hs">Souris HS</option>
+                            <option value="ne_demarre">Ne démarre pas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">Photo</label>
+                        <input type="file" name="photo" class="form-control" accept="image/*">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea name="description" class="form-control" rows="2" placeholder="Description de l'ordinateur..."></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="hidden" name="action" value="ajouter">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Ajouter l'ordinateur
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Liste des ordinateurs -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Liste des ordinateurs</h5>
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>N°</th>
+                        <th>Photo</th>
+                        <th>Code</th>
+                        <th>Salle</th>
+                        <th>État</th>
+                        <th>Description</th>
+                        <th>Assigné à</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ordi in ordinateurs %}
+                    <tr>
+                        <td><span class="fw-bold badge bg-secondary">#{{ ordi.numero }}</span></span></td>
+                        <td>
+                            {% if ordi.photo %}
+                                <img src="{{ ordi.photo.url }}" alt="{{ ordi.code_unique }}" 
+                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
+                                     data-bs-toggle="modal" data-bs-target="#imageModal{{ ordi.id }}" class="img-thumbnail">
+                            {% else %}
+                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" 
+                                     style="width: 50px; height: 50px; border-radius: 5px;">
+                                    <i class="fas fa-desktop fa-2x"></i>
+                                </div>
+                            {% endif %}
+                        </span></td>
+                        <td><strong>{{ ordi.code_unique }}</strong></span></td>
+                        <td>{{ ordi.salle.nom }}</span></td>
+                        <td>
+                            {% if ordi.etat == 'excellent' %}
+                                <span class="badge bg-success"><i class="fas fa-star me-1"></i>{{ ordi.get_etat_display }}</span>
+                            {% elif ordi.etat == 'bon' %}
+                                <span class="badge bg-primary"><i class="fas fa-check me-1"></i>{{ ordi.get_etat_display }}</span>
+                            {% elif ordi.etat == 'lent' %}
+                                <span class="badge bg-warning text-dark"><i class="fas fa-tachometer-alt me-1"></i>{{ ordi.get_etat_display }}</span>
+                            {% elif ordi.etat == 'ecran_casse' %}
+                                <span class="badge bg-danger"><i class="fas fa-tv me-1"></i>{{ ordi.get_etat_display }}</span>
+                            {% elif ordi.etat == 'clavier_hs' %}
+                                <span class="badge bg-danger"><i class="fas fa-keyboard me-1"></i>{{ ordi.get_etat_display }}</span>
+                            {% elif ordi.etat == 'souris_hs' %}
+                                <span class="badge bg-danger"><i class="fas fa-mouse me-1"></i>{{ ordi.get_etat_display }}</span>
+                            {% elif ordi.etat == 'ne_demarre' %}
+                                <span class="badge bg-dark"><i class="fas fa-power-off me-1"></i>{{ ordi.get_etat_display }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ ordi.get_etat_display }}</span>
+                            {% endif %}
+                         </span></td>
+                        <td>{{ ordi.description|default:"-"|truncatechars:50 }}</span></span></td>
+                        <table>
+                            {% if ordi.etudiant_assigne %}
+                                <span class="badge bg-info">
+                                    <i class="fas fa-user-graduate me-1"></i>{{ ordi.etudiant_assigne.nom }} {{ ordi.etudiant_assigne.prenom }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Libre</span>
+                            {% endif %}
+                         </span></td>
+                        <td>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <button type="button" class="btn btn-sm btn-info voir-ordinateur" 
+                                    data-id="{{ ordi.id }}" 
+                                    data-code="{{ ordi.code_unique }}" 
+                                    data-numero="{{ ordi.numero }}" 
+                                    data-etat="{{ ordi.get_etat_display }}" 
+                                    data-description="{{ ordi.description|default:'Aucune description' }}" 
+                                    data-salle="{{ ordi.salle.nom }}" 
+                                    data-photo="{% if ordi.photo %}{{ ordi.photo.url }}{% endif %}"
+                                    data-assignee="{% if ordi.etudiant_assigne %}true{% else %}false{% endif %}"
+                                    data-etudiant="{% if ordi.etudiant_assigne %}{{ ordi.etudiant_assigne.nom }} {{ ordi.etudiant_assigne.prenom }}{% endif %}">
+                                    <i class="fas fa-eye me-1"></i>Voir
+                                </button>
+                                <a href="{% url 'modifier_ordinateur' ordi.id %}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit me-1"></i>Modifier
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger supprimer-ordinateur" 
+                                    data-id="{{ ordi.id }}" 
+                                    data-code="{{ ordi.code_unique }}" 
+                                    data-numero="{{ ordi.numero }}"
+                                    data-assignee="{% if ordi.etudiant_assigne %}true{% else %}false{% endif %}"
+                                    data-etudiant="{% if ordi.etudiant_assigne %}{{ ordi.etudiant_assigne.nom }} {{ ordi.etudiant_assigne.prenom }}{% endif %}">
+                                    <i class="fas fa-trash me-1"></i>Supprimer
+                                </button>
+                            </div>
+                         </span></td>
+                     </tr>
+                    
+                    <!-- Modal Image -->
+                    {% if ordi.photo %}
+                    <div class="modal fade" id="imageModal{{ ordi.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-info text-white">
+                                    <h5 class="modal-title">Ordinateur {{ ordi.code_unique }}</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img src="{{ ordi.photo.url }}" alt="{{ ordi.code_unique }}" style="max-width: 100%; max-height: 400px; border-radius: 10px;">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <i class="fas fa-desktop fa-3x text-muted mb-3 d-block"></i>
+                            <p class="text-muted mb-0">Aucun ordinateur trouvé</p>
+                            <small class="text-muted">Ajoutez votre premier ordinateur via le formulaire ci-dessus</small>
+                         </span></td>
+                     </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Voir Ordinateur -->
+<div class="modal fade" id="voirOrdinateurModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-desktop me-2"></i>Détails de l'ordinateur</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img id="voirOrdinateurPhoto" src="" alt="Photo" style="max-width: 100%; max-height: 300px; border-radius: 10px; display: none;">
+                    <div id="voirOrdinateurNoPhoto" class="bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 100%; height: 200px; border-radius: 10px;">
+                        <i class="fas fa-desktop fa-4x"></i>
+                    </div>
+                </div>
+                <table class="table table-borderless">
+                    <tr><th>Numéro :</th><td id="voirOrdinateurNumero">-</td></tr>
+                    <tr><th>Code :</th><td id="voirOrdinateurCode">-</td></tr>
+                    <tr><th>Salle :</th><td id="voirOrdinateurSalle">-</td></tr>
+                    <tr><th>État :</th><td id="voirOrdinateurEtat">-</td></tr>
+                    <tr><th>Description :</th><td id="voirOrdinateurDescription">-</td></tr>
+                    <tr id="voirOrdinateurAssigneRow" style="display: none;">
+                        <th>Assigné à :</th><td id="voirOrdinateurAssigne">-</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Suppression -->
+<div class="modal fade" id="supprimerOrdinateurModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" id="supprimerOrdinateurForm">
+                {% csrf_token %}
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Confirmer la suppression</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Supprimer l'ordinateur :</p>
+                    <p class="fw-bold text-center" id="supprimerOrdinateurCode"></p>
+                    <div id="supprimerOrdinateurAlerte" class="alert alert-warning mt-3" style="display: none;">
+                        <i class="fas fa-user-graduate me-2"></i>
+                        Assigné à <strong id="supprimerOrdinateurEtudiant"></strong>
+                    </div>
+                    <p class="text-danger mt-3">⚠️ Action irréversible</p>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="ordinateur_id" id="supprimerOrdinateurId">
+                    <input type="hidden" name="action" value="supprimer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger">Confirmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Afficher les toasts Django
+    const djangoToasts = document.querySelectorAll('.django-message-toast');
+    djangoToasts.forEach(function(toastElement) {
+        const toast = new bootstrap.Toast(toastElement, { autohide: true, delay: 3000 });
+        toast.show();
+    });
+    
+    setTimeout(function() {
+        const container = document.getElementById('django-messages-container');
+        if (container) container.remove();
+    }, 3500);
+    
+    // Voir Ordinateur
+    document.querySelectorAll('.voir-ordinateur').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('voirOrdinateurCode').textContent = this.dataset.code;
+            document.getElementById('voirOrdinateurNumero').textContent = this.dataset.numero;
+            document.getElementById('voirOrdinateurSalle').textContent = this.dataset.salle;
+            document.getElementById('voirOrdinateurEtat').innerHTML = `<span class="badge bg-primary">${this.dataset.etat}</span>`;
+            document.getElementById('voirOrdinateurDescription').textContent = this.dataset.description;
+            
+            if (this.dataset.photo && this.dataset.photo !== 'None') {
+                document.getElementById('voirOrdinateurPhoto').src = this.dataset.photo;
+                document.getElementById('voirOrdinateurPhoto').style.display = 'block';
+                document.getElementById('voirOrdinateurNoPhoto').style.display = 'none';
+            } else {
+                document.getElementById('voirOrdinateurPhoto').style.display = 'none';
+                document.getElementById('voirOrdinateurNoPhoto').style.display = 'flex';
+            }
+            
+            if (this.dataset.assignee === 'true' && this.dataset.etudiant) {
+                document.getElementById('voirOrdinateurAssigne').textContent = this.dataset.etudiant;
+                document.getElementById('voirOrdinateurAssigneRow').style.display = 'table-row';
+            } else {
+                document.getElementById('voirOrdinateurAssigneRow').style.display = 'none';
+            }
+            
+            new bootstrap.Modal(document.getElementById('voirOrdinateurModal')).show();
+        });
+    });
+    
+    // Supprimer Ordinateur
+    document.querySelectorAll('.supprimer-ordinateur').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('supprimerOrdinateurId').value = this.dataset.id;
+            document.getElementById('supprimerOrdinateurCode').innerHTML = `${this.dataset.code} (N°${this.dataset.numero})`;
+            
+            if (this.dataset.assignee === 'true' && this.dataset.etudiant) {
+                document.getElementById('supprimerOrdinateurEtudiant').textContent = this.dataset.etudiant;
+                document.getElementById('supprimerOrdinateurAlerte').style.display = 'block';
+            } else {
+                document.getElementById('supprimerOrdinateurAlerte').style.display = 'none';
+            }
+            
+            new bootstrap.Modal(document.getElementById('supprimerOrdinateurModal')).show();
+        });
+    });
+});
+</script>
+
+<style>
+    .img-thumbnail {
+        transition: transform 0.2s ease;
+        cursor: pointer;
+    }
+    .img-thumbnail:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .btn { margin: 2px; }
+    .badge { font-size: 0.85em; padding: 0.35em 0.65em; }
+</style>
+{% endblock %}

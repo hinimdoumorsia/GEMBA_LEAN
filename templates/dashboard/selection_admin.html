@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h3><i class="bi bi-building me-2"></i> GEMBA LEAN - Administration Salle IATD-SI</h3>
+            <p class="mb-0">Bienvenue, Cher(e) <strong>{{ user.username }}</strong></p>
+        </div>
+        <div class="card-body">
+            <h5 class="mb-4">Veuillez sélectionner le niveau et le semestre</h5>
+            
+            <form method="post" action="{% url 'selection_traitement' %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Niveau</label>
+                        <select name="niveau" id="niveau" class="form-select" required>
+                            <option value="">-- Choisir le niveau --</option>
+                            <option value="3">3ème Année</option>
+                            <option value="4">4ème Année</option>
+                            <option value="5">5ème Année</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Semestre</label>
+                        <select name="semestre" id="semestre" class="form-select" required>
+                            <option value="">-- Choisir le semestre --</option>
+                            <option value="1">Semestre 1</option>
+                            <option value="2">Semestre 2</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="message_5eme" class="alert alert-info" style="display: none;">
+                    <i class="bi bi-info-circle me-2"></i> Pour la 5ème année, le semestre est imposé (Semestre unique)
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+                    <i class="bi bi-play-circle me-2"></i> Commencer le contrôle et la gestion
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const niveauSelect = document.getElementById('niveau');
+    const semestreSelect = document.getElementById('semestre');
+    const message5eme = document.getElementById('message_5eme');
+    
+    niveauSelect.addEventListener('change', function() {
+        if (this.value === '5') {
+            semestreSelect.value = '1';
+            semestreSelect.disabled = true;
+            message5eme.style.display = 'block';
+        } else {
+            semestreSelect.disabled = false;
+            message5eme.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
