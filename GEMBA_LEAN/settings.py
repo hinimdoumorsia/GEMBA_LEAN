@@ -129,7 +129,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_PORT = 587
 # EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = 'hinimdoumorsia@gmail.com'
-# EMAIL_HOST_PASSWORD = 'iotv nfva vpio xiad'
+# EMAIL_HOST_PASSWORD = ''
 # DEFAULT_FROM_EMAIL = 'GEMBA LEAN <hinimdoumorsia@gmail.com>'
 
 # Paramètres supplémentaires SMTP
