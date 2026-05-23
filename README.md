@@ -168,11 +168,150 @@ L’administrateur peut notamment :
 
 | Tableau de bord administrateur |
 |---|
-| ![](images/dashbord.PNG) |
+| ![](images/ashbord.PNG) |
+
+
+
+## **Gestion des étudiants**
+
+Dans cette section, l’administrateur peut gérer les étudiants de la plateforme.  
+Il peut notamment ajouter un étudiant, lui associer une chaise ainsi qu’un ordinateur afin de faciliter la gestion des ressources.
+
+Pour accéder à cette fonctionnalité, il suffit de cliquer sur l’onglet **Gestion Étudiants** dans le tableau de bord administrateur.  
+L’administrateur sera alors redirigé vers l’interface suivante :
+
+| Interface de gestion des étudiants |
+|---|
+| ![](images/GestionEtudiants.PNG) |
+
+Depuis cette interface, il est possible d’ajouter un nouvel étudiant en renseignant les informations nécessaires.  
+
+Une fois l’ajout effectué, l’administrateur peut descendre vers le bas de la page afin de consulter la liste des étudiants déjà enregistrés dans la plateforme.
+
+| Liste des étudiants enregistrés |
+|---|
+| ![](images/Gestionetudiantsuite.PNG) |
+
+
+Une fois toutes les informations enregistrées, l’administrateur peut consulter les équipements associés à chaque étudiant en cliquant sur le bouton **Voir équipement**.
+
+Cette fonctionnalité permet d’afficher les différentes ressources attribuées à un étudiant, notamment la chaise et l’ordinateur qui lui sont associés.
+
+| Consultation des équipements associés aux étudiants |
+|---|
+| ![](images/voirequipementetudiants.PNG) |
+
+
+##  **Modification des équipements associés à un étudiant**
+
+Cette section permet à l’administrateur de modifier les équipements déjà attribués à un étudiant (chaise et ordinateur).  
+Cela est utile en cas de changement d’affectation ou de mise à jour des ressources.
+
+Pour accéder à cette fonctionnalité, il suffit de cliquer sur l’option de modification depuis la liste des équipements d’un étudiant.
+
+L’interface suivante permet alors de modifier les informations associées :
+
+| Modification des équipements d’un étudiant |
+|---|
+| ![](images/modifierequipementetudiants.PNG) |
+
+
+## **Gestion des chaises**
+
+Cette section permet à l’administrateur de gérer les chaises disponibles dans le système.  
+Le processus est similaire à celui de la gestion des étudiants.
+
+Pour commencer, il faut cliquer sur l’onglet **Gestion des chaises** dans le tableau de bord.  
+L’administrateur est ensuite redirigé vers l’interface suivante :
+
+| Interface de gestion des chaises |
+|---|
+| ![](images/gestionChaise.PNG) |
+
+Depuis cette interface, l’administrateur peut remplir les informations nécessaires puis cliquer sur le bouton **Ajouter** afin d’enregistrer une nouvelle chaise.
+
+Une fois la chaise ajoutée, il peut faire défiler la page vers le bas pour consulter la liste des chaises déjà enregistrées :
+
+| Liste des chaises ajoutées |
+|---|
+| ![](images/listechaiseASSOCIEGESTION.PNG) |
+
+À partir de cette liste, plusieurs actions sont possibles :
+
+- **Voir chaise** : permet d’afficher les détails d’une chaise sélectionnée.
+
+| Détails de la chaise |
+|---|
+| ![](images/VOIRCHAISE.PNG) |
+
+- **Modifier** : permet de mettre à jour les informations d’une chaise.
+
+| Modification de la chaise |
+|---|
+| ![](images/MODIFIERCHAISE.PNG) |
+
+- **Supprimer** : permet de supprimer une chaise de la liste lorsqu’elle n’est plus nécessaire ou doit être retirée du système.
+
+
+
+## **Gestion des ordinateurs**
+
+Cette section permet à l’administrateur de gérer les ordinateurs disponibles dans le système.  
+Il peut ajouter un nouvel ordinateur, modifier ses informations, le supprimer ou consulter ses détails selon les besoins.
+
+### **Interface principale**
+
+En cliquant sur **Gestion des ordinateurs**, l’administrateur accède à la page suivante :
+
+| Interface de gestion des ordinateurs |
+|---|
+| ![](images/GestionOrdinateur.PNG) |
+
+### **Ajout d’un ordinateur**
+
+Pour ajouter un ordinateur, il suffit de remplir les différents champs comme indiqué ci-dessous :
+
+| Choix de l’identifiant | Choix de l’état |
+|---|---|
+| ![](images/choiseidordinateur.PNG) | ![](images/choisirEtatordinateur.PNG) |
+
+Ensuite, il faut sélectionner une image de l’ordinateur et cliquer sur **Ajouter** pour enregistrer les informations.
+
+### Liste et gestion des ordinateurs
+
+Après ajout, en descendant vers le bas de la page, l’administrateur peut accéder à la liste des ordinateurs et effectuer plusieurs actions.
+
+- **Modifier un ordinateur** : permet de changer les informations d’un ordinateur.
+
+| Modification d’un ordinateur |
+|---|
+| ![](images/modifierordinateur.PNG) |
+
+- **Voir les détails** : permet d’afficher les informations complètes d’un ordinateur.
+
+| Détails de l’ordinateur |
+|---|
+| ![](images/VoirOrdidetaille.PNG) |
+
+| Autres détails |
+|---|
+| ![](images/detailleordivoir.PNG) |
+
+---
+
+##  **Conclusion**
+
+Vous venez de parcourir l’essentiel de notre application.
+
+Une partie concernant les utilisateurs (signalement de problèmes et assistance) était également prévue, mais n’a pas pu être finalisée par manque de temps.
+
+
 
 ## **Contributeurs**
 *   **Hinimdou Morsia Guitdam** — Élève ingénieur IA & Technologie des Données
 *   **Nankouli Marc Thierry** — Élève ingénieur IA & Technologie des Données
+
+
 
 ---
 *Projet réalisé dans le cadre de l'amélioration continue (Kaizen) de l'ENSAM Meknès.*
