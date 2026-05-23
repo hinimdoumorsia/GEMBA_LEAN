@@ -125,6 +125,27 @@ Après confirmation, vous pourrez vous connecter à l’application.
 |---|---|
 | ![](images/Connexion.PNG) | ![](images/Inscription.PNG) |
 
+
+
+## **Interface principale d’administration**
+
+Après la connexion, l’administrateur accède à l’interface principale de l’application.  
+Il est alors invité à sélectionner le niveau correspondant à l’année d’étude (3ème, 4ème ou 5ème année), comme illustré ci-dessous.
+
+### **Sélection du niveau**
+
+| Interface principale | Sélection du niveau |
+|---|---|
+| ![](images/interfaceadmin1.PNG) | ![](images/selectlevel.PNG) |
+
+Ensuite, l’administrateur doit choisir le semestre correspondant (Semestre 1 ou Semestre 2), puis cliquer sur le bouton de validation afin de continuer le processus.
+
+### **Sélection du semestre**
+
+| Sélection du semestre |
+|---|
+| ![](images/SelectionSemestre.PNG) |
+
 ## **Contributeurs**
 *   **Hinimdou Morsia Guitdam** — Élève ingénieur IA & Technologie des Données
 *   **Nankouli Marc Thierry** — Élève ingénieur IA & Technologie des Données
