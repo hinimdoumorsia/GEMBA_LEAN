@@ -146,6 +146,30 @@ Ensuite, l’administrateur doit choisir le semestre correspondant (Semestre 1 o
 |---|
 | ![](images/SelectionSemestre.PNG) |
 
+
+
+## **Tableau de bord administrateur**
+
+Cette partie correspond au tableau de bord principal de l’administrateur.  
+Elle permet de superviser et gérer l’ensemble des ressources disponibles dans l’application.
+
+L’administrateur peut notamment :
+
+- Gérer les ordinateurs ;
+- Gérer les chaises ;
+- Gérer les étudiants ;
+- Associer une chaise à un étudiant donné ;
+- Visualiser en temps réel les statistiques des chaises disponibles ;
+- Mettre à jour les informations des équipements et des étudiants ;
+- Ajouter ou supprimer un étudiant, une chaise ou un ordinateur ;
+- Ajouter une description, un identifiant ainsi qu’une image pour chaque chaise ou ordinateur.
+
+###  **Interface du tableau de bord administrateur**
+
+| Tableau de bord administrateur |
+|---|
+| ![](images/dashbord.PNG) |
+
 ## **Contributeurs**
 *   **Hinimdou Morsia Guitdam** — Élève ingénieur IA & Technologie des Données
 *   **Nankouli Marc Thierry** — Élève ingénieur IA & Technologie des Données
