@@ -305,7 +305,11 @@ Vous venez de parcourir l’essentiel de notre application.
 
 Une partie concernant les utilisateurs (signalement de problèmes et assistance) était également prévue, mais n’a pas pu être finalisée par manque de temps.
 
+Vous trouverez ci-joint le lien vers la démonstration vidéo complète de l’application Gemba Lean :
 
+🔗 https://youtu.be/G7pO9yBUukw
+
+Cette vidéo présente les principales fonctionnalités de l’application ainsi que les différentes interfaces développées.
 
 ## **Contributeurs**
 *   **Hinimdou Morsia Guitdam** — Élève ingénieur IA & Technologie des Données
