@@ -1,31 +1,31 @@
 # GEMBA LEAN - Gestion de la Salle IATD (ENSAM Meknès)
 
-## 📌 Introduction
+##  **Introduction**
 Le projet **GEMBA LEAN** est une application pratique s'inscrivant dans une démarche de **Lean Manufacturing**. Son objectif principal est de contribuer activement à l'aménagement et à l'optimisation de la salle "Intelligence Artificielle et Technologie de Données" (IATD) de l'**ENSAM Meknès**.
 
-### Le Problème
+### **Le Problème**
 La salle est partagée par trois niveaux d'étudiants (3ème, 4ème et 5ème année). Auparavant, l'absence de places fixes entraînait une gestion chaotique :
 *   Installation d'applications de manière désordonnée.
 *   Création de comptes utilisateurs multiples à chaque changement de poste.
 *   Risque de suppression accidentelle des projets d'autres étudiants.
 *   Usure du matériel difficile à suivre.
 
-### La Solution : Le "Gemba" (Le terrain)
+### **La Solution : Le "Gemba" (Le terrain)**
 Fidèle à la philosophie Lean, ce projet n'a pas commencé devant un écran, mais sur le terrain (**Gemba**). Avant tout développement, une phase de travail physique a été nécessaire :
 1.  **Audit technique :** Confirmation des chaises et ordinateurs fonctionnels.
 2.  **Étiquetage :** Identification physique de chaque équipement.
 3.  **Standardisation :** Attribution d'un binôme (Ordinateur + Chaise) unique à chaque étudiant pour instaurer une responsabilité et un suivi rigoureux.
 
-## 🎯 Intérêt de l'application
+##  **Intérêt de l'application**
 *   **Organisation de la salle :** Une place pour chaque chose et chaque chose à sa place.
 *   **Amélioration de la gestion :** Suivi en temps réel de l'état du matériel (Excellent, Bon, Cassé, etc.).
 *   **Gain de temps :** Réduction du temps perdu par les étudiants et les professeurs lors de l'installation et du démarrage des séances.
 *   **Maintenance préventive :** Système de signalement intégré pour corriger les anomalies dès leur apparition.
 
-## 🏗️ Architecture du Projet
+##  **Architecture du Projet**
 Le projet suit une structure modulaire Django standard, complétée par des dossiers pour les médias et les logs.
 
-### Arborescence des Fichiers
+### **Arborescence des Fichiers**
 ```text
 GEMBA_LEAN/
 ├── GEMBA_LEAN/             # Dossier de configuration du projet
@@ -51,7 +51,9 @@ GEMBA_LEAN/
 └── README.md               # Documentation
 ```
 
-### Logique MVT (Model-View-Template)
+
+
+### **Logique MVT (Model-View-Template)**
 L'application repose sur le framework Django et respecte le pattern suivant :
 
 *   **Modèles (Base de données) :** 
@@ -63,7 +65,7 @@ L'application repose sur le framework Django et respecte le pattern suivant :
 *   **Vues (Logique métier) :** Dashboards différenciés par profil (Administrateur, Responsable, Utilisateur) pour une gestion granulaire.
 *   **URLs :** Structure de routage organisée par fonctionnalités (Auth, Admin, CRUD Équipements, API AJAX).
 
-## 🛠️ Technologies Utilisées
+## **Technologies Utilisées**
 *   **Langage :** Python 3.x
 *   **Framework Web :** Django 4.2.7
 *   **Gestion d'images :** Pillow 10.1.0
@@ -71,7 +73,7 @@ L'application repose sur le framework Django et respecte le pattern suivant :
 *   **Frontend :** HTML5, CSS3, JavaScript (AJAX pour les interactions dynamiques).
 *   **Sécurité :** Tokens UUID4 pour la vérification des emails.
 
-## 🚀 Installation et Reproduction
+## **Installation et Reproduction**
 Si vous souhaitez cloner ce projet et le lancer localement :
 
 1.  **Cloner le dépôt :**
@@ -111,7 +113,19 @@ Si vous souhaitez cloner ce projet et le lancer localement :
     ```
     Accédez ensuite à l'application via `http://127.0.0.1:8000`.
 
-## 👥 Contributeurs
+##  **Démonstration de l’application**
+
+Lorsque vous lancez votre application pour la première fois, vous serez redirigé vers la page de connexion suivante.  
+Si vous ne disposez pas encore d’un compte, il faudra alors en créer un en remplissant le formulaire d’inscription.
+
+Une fois les informations renseignées, un e-mail de confirmation vous sera envoyé afin de valider votre compte.  
+Après confirmation, vous pourrez vous connecter à l’application.
+
+|  Interface de connexion |  Interface d’inscription |
+|---|---|
+| ![](images/Connexion.PNG) | ![](images/Inscription.PNG) |
+
+## **Contributeurs**
 *   **Hinimdou Morsia Guitdam** — Élève ingénieur IA & Technologie des Données
 *   **Nankouli Marc Thierry** — Élève ingénieur IA & Technologie des Données
 
